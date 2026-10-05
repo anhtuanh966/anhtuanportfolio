@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuấn. - Portfolio</title>
+    
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 15s ease-in-out infinite',
+                        'float-delayed': 'float 18s ease-in-out infinite -5s',
+                        'spin-slow': 'spin 25s linear infinite',
+                        'marquee': 'marquee 40s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(calc(-50% - 1.5rem))' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer base {
+            body {
+                @apply text-gray-300 font-sans antialiased overflow-x-hidden selection:bg-white/20 selection:text-white;
+                background-color: var(--bg-color);
+                transition: background-color 1.5s ease-in-out;
+            }
+        }
+
+        /* Dynamic Themes */
+        body[data-theme="home"] {
+            --bg-color: #030305;
+            --orb-1: #8B5CF6; /* Purple */
+            --orb-2: #3B82F6; /* Blue */
+            --orb-3: #06B6D4; /* Cyan */
+        }
+        body[data-theme="about"] {
+            --bg-color: #0a0303;
+            --orb-1: #F43F5E; /* Rose */
+            --orb-2: #F97316; /* Orange */
+            --orb-3: #F59E0B; /* Amber */
+        }
+        body[data-theme="experience"] {
+            --bg-color: #010605;
+            --orb-1: #10B981; /* Emerald */
+            --orb-2: #14B8A6; /* Teal */
+            --orb-3: #4F46E5; /* Indigo */
+        }
+        body[data-theme="skills"] {
+            --bg-color: #050206;
+            --orb-1: #D946EF; /* Fuchsia */
+            --orb-2: #3B82F6; /* Blue */
+            --orb-3: #8B5CF6; /* Violet */
+        }
+        body[data-theme="events"] {
+            --bg-color: #080202;
+            --orb-1: #E11D48; /* Crimson */
+            --orb-2: #F59E0B; /* Gold */
+            --orb-3: #EC4899; /* Pink */
+        }
+        body[data-theme="contact"] {
+            --bg-color: #020406;
+            --orb-1: #06B6D4; /* Cyan */
+            --orb-2: #64748B; /* Slate */
+            --orb-3: #3B82F6; /* Blue */
+        }
+
+        /* Ambient Noise Overlay for Depth */
+        .ambient-noise {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            @apply bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-3xl p-8 transition-all duration-500 hover:bg-white/[0.04] hover:border-white/[0.1] hover:-translate-y-1 shadow-2xl;
+        }
+
+        /* Ethereal Gradients */
+        .text-gradient {
+            @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-500;
+        }
+        .text-gradient-dynamic {
+            @apply bg-clip-text text-transparent;
+            background-image: linear-gradient(to right, var(--orb-1), var(--orb-2));
+            transition: background-image 1.5s ease-in-out;
+        }
+
+        /* Glow Effects */
+        .glow-orb {
+            @apply absolute rounded-full mix-blend-screen filter blur-[120px] opacity-40 pointer-events-none z-0;
+            transition: background-color 1.5s ease-in-out;
+        }
+        .orb-1 { background-color: var(--orb-1); }
+        .orb-2 { background-color: var(--orb-2); }
+        .orb-3 { background-color: var(--orb-3); }
+
+        .section-padding {
+            @apply py-32 px-6 md:px-12 lg:px-24 max-w-7xl mx-auto relative z-10;
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        
+        .hover-pause:hover { animation-play-state: paused; }
+
+        /* Custom subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen" data-theme="home">
+
+    <!-- Ethereal Atmospheric Background -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="glow-orb orb-1 w-[600px] h-[600px] top-[-10%] left-[-10%] animate-float"></div>
+        <div class="glow-orb orb-2 w-[500px] h-[500px] bottom-[-10%] right-[-10%] animate-float-delayed"></div>
+        <div class="glow-orb orb-3 w-[800px] h-[800px] top-[40%] left-[30%] opacity-20 animate-spin-slow"></div>
+    </div>
+    
+    <!-- Subtle Noise Texture -->
+    <div class="ambient-noise"></div>
+
+    <!-- Minimal Navbar -->
+    <nav class="fixed top-0 w-full z-50 bg-black/10 backdrop-blur-md border-b border-white/5 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <span class="text-xl font-bold tracking-widest text-white">HAT.</span>
+            <div class="hidden md:flex gap-8 text-sm font-medium tracking-widest uppercase">
+                <a href="#about" class="hover:text-white transition-colors">Vision</a>
+                <a href="#experience" class="hover:text-white transition-colors">Journey</a>
+                <a href="#skills" class="hover:text-white transition-colors">Skills</a>
+                <a href="#events" class="hover:text-white transition-colors">Works</a>
+                <a href="#contact" class="hover:text-white transition-colors">Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="relative z-10">
+
+        <!-- Hero Section -->
+        <section id="home" class="min-h-screen flex items-center justify-center section-padding pt-32">
+            <div class="text-center w-full max-w-4xl reveal">
+                <span class="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-xs font-medium tracking-widest uppercase mb-8">
+                    Available for Work
+                </span>
+                
+                <h1 class="text-6xl md:text-8xl lg:text-[7.5rem] font-bold tracking-tighter mb-6 leading-tight">
+                    <span class="text-gradient">Hoàng Anh</span>
+                    <span class="text-gradient-dynamic">Tuấn</span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-gray-400 font-light max-w-3xl mx-auto leading-relaxed mb-12">
+                    A senior scholar orchestrating complex operations. I craft bold strategies and seamless experiences with precision and purpose.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+                    <a href="#contact" class="px-8 py-4 rounded-full bg-white text-black font-semibold tracking-wide hover:scale-105 transition-transform duration-300">
+                        Let's Talk
+                    </a>
+                    <a href="#about" class="px-8 py-4 rounded-full bg-white/5 border border-white/10 text-white font-medium hover:bg-white/10 transition-colors duration-300">
+                        Explore My Work
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section-padding">
+            <div class="flex flex-col lg:flex-row gap-16 items-center">
+                <div class="w-full lg:w-5/12 shrink-0 reveal">
+                    <div class="aspect-[4/5] rounded-[2rem] overflow-hidden p-2 bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm shadow-2xl relative group">
+                        <img src="./portrait.jpg" alt="Hoàng Anh Tuấn" class="w-full h-full object-cover rounded-[1.5rem] filter contrast-110 saturate-100 group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                </div>
+                <div class="w-full lg:w-7/12 reveal delay-100">
+                    <h2 class="text-xs text-gray-500 font-medium uppercase tracking-[2px] mb-4">01 / The Vision</h2>
+                    <h3 class="text-4xl md:text-5xl font-semibold mb-8 tracking-tight text-white">The Makings of a Leader</h3>
+                    
+                    <div class="space-y-6 text-lg text-gray-400 font-light leading-relaxed mb-12">
+                        <p>Driven by a profound passion for public affairs and large-scale orchestration, I am eager to apply my academic foundation to a dynamic, fast-paced environment.</p>
+                        <p>I specialize in operations, policy management, and international trade coordination. Highly adaptable and possessing a relentless desire to learn, I am committed to contributing to seamless daily operations while establishing a strong, practical foundation in the industry.</p>
+                    </div>
+
+                    <div class="glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                        <div>
+                            <p class="text-xs text-gray-500 font-medium uppercase tracking-[1px] mb-2">Education</p>
+                            <h4 class="text-xl font-semibold text-white">Foreign Trade University</h4>
+                            <p class="text-gradient-dynamic font-medium">International Business Economics</p>
+                        </div>
+                        <div class="sm:text-right">
+                            <p class="text-xs text-gray-500 font-medium uppercase tracking-[1px] mb-2">GPA</p>
+                            <p class="text-4xl font-semibold text-white">3.71<span class="text-xl text-gray-500 font-normal">/4.0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="section-padding">
+            <h2 class="text-xs text-gray-500 font-medium uppercase tracking-[2px] mb-4">02 / The Journey</h2>
+            <h3 class="text-4xl md:text-5xl font-semibold mb-16 tracking-tight text-white">Experience</h3>
+            
+            <div class="space-y-8">
+                <!-- Role 1 -->
+                <div class="glass-card relative overflow-hidden group reveal">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                        <div class="md:w-1/3">
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-2">2024 - Present</p>
+                            <h3 class="text-3xl font-semibold text-white mb-1">Vice-President</h3>
+                            <p class="text-gray-500 italic">Ex-Deputy Head</p>
+                            <p class="text-gradient-dynamic font-semibold mt-4 tracking-widest uppercase">FTU FORUM</p>
+                        </div>
+                        <div class="md:w-2/3">
+                            <ul class="space-y-4 text-gray-400 font-light text-lg">
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-white opacity-50">✦</span>
+                                    <span><strong class="text-white font-medium">Event & Operations:</strong> Orchestrated end-to-end events involving 1,000+ participants, mastering complex timelines and resource deployment.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-white opacity-50">✦</span>
+                                    <span><strong class="text-white font-medium">Leadership:</strong> Directed a 16-member team, establishing cohesive and collaborative workflows.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-white opacity-50">✦</span>
+                                    <span><strong class="text-white font-medium">Budgeting:</strong> Co-managed strategic financial planning to maximize resource efficiency.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role 2 -->
+                <div class="glass-card relative overflow-hidden group reveal delay-100">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                        <div class="md:w-1/3">
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-widest mb-2">2024 - 2025</p>
+                            <h3 class="text-3xl font-semibold text-white mb-1">Teaching Assistant</h3>
+                            <p class="text-gray-500 italic">Online Platform</p>
+                            <p class="text-gradient-dynamic font-semibold mt-4 tracking-widest uppercase">Học IELTS 8.0</p>
+                        </div>
+                        <div class="md:w-2/3">
+                            <ul class="space-y-4 text-gray-400 font-light text-lg">
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-white opacity-50">✦</span>
+                                    <span>Supported the Advanced Course by expertly mentoring 10 remote students.</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="mr-3 mt-1 text-white opacity-50">✦</span>
+                                    <span>Graded coursework with targeted, actionable feedback, driving a 100% course completion rate.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section-padding">
+            <h2 class="text-xs text-gray-500 font-medium uppercase tracking-[2px] mb-4">03 / Core Competencies</h2>
+            <h3 class="text-4xl md:text-5xl font-semibold mb-16 tracking-tight text-white">The Arsenal</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Professional -->
+                <div class="glass-card reveal">
+                    <h3 class="text-2xl font-semibold text-white mb-8">Professional</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">Management</span>
+                        <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">Negotiation</span>
+                        <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">Leadership</span>
+                        <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300">Critical Thinking</span>
+                    </div>
+                </div>
+
+                <!-- Technical -->
+                <div class="glass-card reveal delay-100">
+                    <h3 class="text-2xl font-semibold text-white mb-8">Technical Tools</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center px-5 py-4 rounded-xl bg-white/5 border border-white/10">
+                            <span class="text-gray-300 text-sm font-medium">MOS Certification</span>
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </div>
+                        <div class="flex justify-between items-center px-5 py-4 rounded-xl bg-white/5 border border-white/10">
+                            <span class="text-gray-300 text-sm font-medium">Google Workspace</span>
+                            <span class="w-2 h-2 rounded-full bg-white"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Languages -->
+                <div class="glass-card reveal delay-200">
+                    <h3 class="text-2xl font-semibold text-white mb-8">Languages</h3>
+                    <div class="space-y-4">
+                        <div class="p-5 rounded-xl bg-white/5 border border-white/10">
+                            <h4 class="text-white font-medium mb-1">Vietnamese</h4>
+                            <p class="text-gray-400 text-sm">Native Proficiency</p>
+                        </div>
+                        <div class="p-5 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-r from-white/0 to-white/5 pointer-events-none"></div>
+                            <h4 class="text-white font-medium mb-1">English</h4>
+                            <p class="text-gradient-dynamic text-sm font-bold tracking-widest">IELTS 8.5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Events Section -->
+        <section id="events" class="py-32 overflow-hidden w-full max-w-[100vw] relative left-1/2 -translate-x-1/2">
+            <div class="max-w-7xl mx-auto px-6 mb-16">
+                <h2 class="text-xs text-gray-500 font-medium uppercase tracking-[2px] mb-4">04 / Featured Works</h2>
+                <h3 class="text-4xl md:text-5xl font-semibold tracking-tight text-white">Events Gallery</h3>
+            </div>
+
+            <div class="relative flex py-4">
+                <!-- Fade edges -->
+                <div class="absolute top-0 left-0 w-24 md:w-48 h-full bg-gradient-to-r from-[var(--bg-color)] to-transparent z-20 pointer-events-none transition-colors duration-[1500ms]"></div>
+                <div class="absolute top-0 right-0 w-24 md:w-48 h-full bg-gradient-to-l from-[var(--bg-color)] to-transparent z-20 pointer-events-none transition-colors duration-[1500ms]"></div>
+                
+                <div class="flex animate-marquee hover-pause gap-8 px-6 w-max">
+                    <!-- EVENT 1 -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event1_muagioam.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Mùa Gió Ấm</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">A meaningful volunteer campaign connecting students with the community to bring warmth and support.</p>
+                        </div>
+                    </div>
+
+                    <!-- EVENT 2 -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event2_bachkhoa.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Bách Khoa Open Day</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">Representing Foreign Trade University at a massive gathering of prospective students.</p>
+                        </div>
+                    </div>
+
+                    <!-- EVENT 3 -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event3_tuyensinh.jpg" class="w-full h-full object-bottom object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Ngày Hội Tuyển Sinh</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">A large-scale admission event featuring major sponsorships and complex logistics.</p>
+                        </div>
+                    </div>
+
+                    <!-- EVENT 4 -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event4_talkshow.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Talkshow</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">An insightful gathering connecting students with industry experts for career guidance.</p>
+                        </div>
+                    </div>
+
+                    <!-- EVENT 5 -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event5_webinar.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Livestream</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">A massive broadcast providing admission counseling and Q&A for thousands.</p>
+                        </div>
+                    </div>
+
+                    <!-- DUPLICATES FOR INFINITE SCROLL -->
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event1_muagioam.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Mùa Gió Ấm</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">A meaningful volunteer campaign connecting students with the community to bring warmth and support.</p>
+                        </div>
+                    </div>
+                    <div class="glass-card !p-4 w-[400px] shrink-0 group">
+                        <div class="w-full h-64 rounded-[1.5rem] overflow-hidden mb-6 relative">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors z-10 duration-500"></div>
+                            <img src="./event2_bachkhoa.jpg" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105">
+                        </div>
+                        <div class="px-2 pb-2">
+                            <h3 class="text-2xl font-semibold text-white mb-2 transition-colors">Bách Khoa Open Day</h3>
+                            <p class="text-gray-400 text-sm font-light leading-relaxed">Representing Foreign Trade University at a massive gathering of prospective students.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section-padding pb-40">
+            <div class="glass-card max-w-4xl mx-auto p-12 text-center reveal">
+                <h2 class="text-xs text-gray-500 font-medium uppercase tracking-[2px] mb-4">05 / Connect</h2>
+                <h3 class="text-5xl font-semibold text-white mb-6 tracking-tight">Let's Create Something Bold.</h3>
+                <p class="text-gray-400 text-lg font-light mb-12 max-w-xl mx-auto">
+                    Currently open for new opportunities. Whether you have a question or a mission, I'll reply promptly.
+                </p>
+                
+                <div class="flex flex-col md:flex-row justify-center gap-8 mb-16">
+                    <a href="mailto:tuanha.ftuforum@gmail.com" class="text-xl font-medium border-b border-white/30 pb-1 hover:text-white hover:border-white transition-colors">
+                        tuanha.ftuforum@gmail.com
+                    </a>
+                    <a href="tel:0395355885" class="text-xl font-medium border-b border-white/30 pb-1 hover:text-white hover:border-white transition-colors">
+                        0395355885
+                    </a>
+                </div>
+
+                <form class="space-y-4 text-left max-w-2xl mx-auto" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" placeholder="Your Name" required class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors">
+                        <input type="email" placeholder="Your Email" required class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors">
+                    </div>
+                    <textarea rows="4" placeholder="Your Message" required class="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors resize-none"></textarea>
+                    
+                    <button type="submit" class="w-full bg-white text-black px-8 py-4 text-sm font-semibold uppercase tracking-[1px] rounded-xl hover:bg-gray-200 transition-colors mt-4">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="py-12 text-center border-t border-white/5">
+            <p class="text-gray-600 text-sm font-medium tracking-wide uppercase">
+                &copy; 2026 Hoàng Anh Tuấn. Designed with atmospheric precision.
+            </p>
+        </footer>
+    </main>
+
+    <script>
+        // Reveal on scroll
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        
+        const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+        
+        revealElements.forEach(el => {
+            revealOnScroll.observe(el);
+        });
+
+        // Theme Observer
+        const sections = document.querySelectorAll('section');
+        const themeOptions = {
+            threshold: 0.4
+        };
+
+        const themeObserver = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    if (id) {
+                        document.body.setAttribute('data-theme', id);
+                    }
+                }
+            });
+        }, themeOptions);
+
+        sections.forEach(section => {
+            themeObserver.observe(section);
+        });
+    </script>
+</body>
+</html>
